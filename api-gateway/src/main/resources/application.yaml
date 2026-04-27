@@ -1,0 +1,71 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    gateway:
+
+      # 🔥 CORS CONFIG (ADD THIS)
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: false
+
+      routes:
+
+        - id: user-service
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/users/**
+          filters:
+            - JwtFilter
+
+        - id: test-service
+          uri: lb://TEST-SERVICE
+          predicates:
+            - Path=/tests/**
+          filters:
+            - JwtFilter
+
+        - id: booking-service
+          uri: lb://BOOKING-SERVICE
+          predicates:
+            - Path=/bookings/**
+          filters:
+            - JwtFilter
+
+        - id: payment-service
+          uri: lb://PAYMENT-SERVICE
+          predicates:
+            - Path=/payments/**
+          filters:
+            - JwtFilter
+
+        - id: report-service
+          uri: lb://REPORT-SERVICE
+          predicates:
+            - Path=/reports/**
+          filters:
+            - JwtFilter
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
